@@ -1,4 +1,5 @@
-using JuMP, JuMPeR, Gurobi, DataFrames, Distributions
+using JuMP, JuMPeR, Gurobi, DataFrames, Distributions, MLDataUtils
+
 include("evaluate.jl")
 
 function _solve(c, df)
@@ -15,17 +16,6 @@ function _solve(c, df)
     for i in 1:n
         @constraint(model, z[i] >= 1 - y[i]*(sum(w[j] * x[i,j] for j=1:p) - b))
     end
-
-    #Uncertinety constraints
-    # @uncertain(model, z[i=1:n])
-    # @uncertain(model, r[i=1:n])
-    # @constraint(model, equality[i=1:n], r[i] == meu[i] + sigma[i] * z[i])
-
-    # @constraint(model, norm(z, Inf) <= 1)
-    # @constraint(model, norm(z, 2) <= theta)
-    #
-    # @constraint(model, sum(x[i] * r[i] for i=1:n) >= t)
-
 
     solve(model)
     b = getvalue(b)
@@ -50,6 +40,8 @@ end
 
 df = readtable("Framingham.csv", header=true, makefactors=true)
 c = buildC(df)
-b, w, z, objective = _solve(c,df)
-measures = DataFrame( model = String[],accuracy = Float64[], precision = Float64[], recall = Float64[])
-evaluate(w, b, z, c, df, measures, "Nominal")
+train, test =  splitobs(shuffleobs(df), at=0.67)
+measures = DataFrame( model = String[], train/test = String[] accuracy = Float64[], precision = Float64[], recall = Float64[])
+b, w, z, objective = _solve(c,train)
+measures = evaluate(w, b, z, c, train, test, measures, "Nominal")
+writetable("measures.csv",measures)

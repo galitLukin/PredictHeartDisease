@@ -1,18 +1,21 @@
 using DataFrames
 
-function evaluate(w, b, z, c, df, measures, modelName)
-    n = size(df,1)
-    y = df[:,16]
-    x = df[:,1:15]
-    p = size(x,2)
-    accuracyVal = accuracy(n, p, w, b, x, y, measures)
-    precisionVal = precision(n, p, w, b, x, y, measures)
-    recallVal = recall(n, p, w, b, x, y, measures)
-    # aucVal = auc(n, p, w, b, x, y, measures)
-    penalty(n, z, c)
-    push!(measures,[modelName,accuracyVal,precisionVal,recallVal])
-    writetable("measures.csv",measures)
-    return
+function evaluate(w, b, z, c, train, test, measures, modelName)
+    df = [train, test]
+    type = ["train", "test"]
+    for i in 1:2
+        n = size(df[i],1)
+        y = df[i][:,16]
+        x = df[i][:,1:15]
+        p = size(x,2)
+        accuracyVal = accuracy(n, p, w, b, x, y, measures)
+        precisionVal = precision(n, p, w, b, x, y, measures)
+        recallVal = recall(n, p, w, b, x, y, measures)
+        # aucVal = auc(n, p, w, b, x, y, measures)
+        penalty(n, z, c)
+        push!(measures,[modelName,type[i],accuracyVal,precisionVal,recallVal])
+    end
+    return measures
 end
 
 function accuracy(n, p, w, b, x, y, measures)
