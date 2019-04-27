@@ -29,10 +29,10 @@ function precision(n, p, w, b, x, y, measures)
     tp = 0
     fp = 0
     for i in 1:n
-        if y[i]*(sum(w[j] * x[i,j] for j=1:p) - b) > 0 & y[i] > 0
+        if y[i]*(sum(w[j] * x[i,j] for j=1:p) - b) > 0 && y[i] > 0
             tp = tp + 1
         end
-        if y[i]*(sum(w[j] * x[i,j] for j=1:p) - b) <= 0 & y[i] < 0
+        if y[i]*(sum(w[j] * x[i,j] for j=1:p) - b) <= 0 && y[i] < 0
             fp = fp + 1
         end
     end
@@ -43,10 +43,10 @@ function recall(n, p, w, b, x, y, measures)
     tp = 0
     fn = 0
     for i in 1:n
-        if y[i]*(sum(w[j] * x[i,j] for j=1:p) - b) > 0 & y[i] > 0
+        if y[i]*(sum(w[j] * x[i,j] for j=1:p) - b) > 0 && y[i] > 0
             tp = tp + 1
         end
-        if y[i]*(sum(w[j] * x[i,j] for j=1:p) - b) <= 0 & y[i] > 0
+        if y[i]*(sum(w[j] * x[i,j] for j=1:p) - b) <= 0 && y[i] > 0
             fn = fn + 1
         end
     end
