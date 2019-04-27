@@ -11,7 +11,7 @@ function evaluate(w, b, z, c, train, test, measures, modelName)
         accuracyVal = accuracy(n, p, w, b, x, y, measures)
         precisionVal = precision(n, p, w, b, x, y, measures)
         recallVal = recall(n, p, w, b, x, y, measures)
-        # aucVal = auc(n, p, w, b, x, y, measures)
+        #aucVal = auc(n, p, w, b, x, y, measures)
         penalty(n, z, c)
         push!(measures,[modelName,type[i],accuracyVal,precisionVal,recallVal])
     end
