@@ -1,4 +1,5 @@
-using JuMP, JuMPeR, Gurobi, DataFrames, Distributions, MLDataUtils
+using JuMP, JuMPeR, Gurobi, DataFrames, Distributions
+using MLDataUtils
 
 include("evaluate.jl")
 
@@ -39,9 +40,11 @@ function buildC(df)
 end
 
 df = readtable("Framingham.csv", header=true, makefactors=true)
-c = buildC(df)
+srand(1)
 train, test =  splitobs(shuffleobs(df), at=0.67)
-measures = DataFrame( model = String[], train/test = String[] accuracy = Float64[], precision = Float64[], recall = Float64[])
-b, w, z, objective = _solve(c,train)
-measures = evaluate(w, b, z, c, train, test, measures, "Nominal")
+cTrain = buildC(train)
+measures = DataFrame( model = String[], trainORtest = String[], accuracy = Float64[], precision = Float64[], recall = Float64[])
+b, w, z, objective = _solve(cTrain,train)
+measures = evaluate(w, b, train, "train", measures, "Nominal")
+measures = evaluate(w, b, test, "test", measures, "Nominal")
 writetable("measures.csv",measures)

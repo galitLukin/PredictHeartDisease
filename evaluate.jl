@@ -1,20 +1,16 @@
 using DataFrames
 
-function evaluate(w, b, z, c, train, test, measures, modelName)
-    df = [train, test]
-    type = ["train", "test"]
-    for i in 1:2
-        n = size(df[i],1)
-        y = df[i][:,16]
-        x = df[i][:,1:15]
-        p = size(x,2)
-        accuracyVal = accuracy(n, p, w, b, x, y, measures)
-        precisionVal = precision(n, p, w, b, x, y, measures)
-        recallVal = recall(n, p, w, b, x, y, measures)
-        #aucVal = auc(n, p, w, b, x, y, measures)
-        penalty(n, z, c)
-        push!(measures,[modelName,type[i],accuracyVal,precisionVal,recallVal])
-    end
+function evaluate(w, b, df, trainORtest, measures, modelName)
+    n = size(df,1)
+    y = df[:,16]
+    x = df[:,1:15]
+    p = size(x,2)
+    accuracyVal = accuracy(n, p, w, b, x, y, measures)
+    precisionVal = precision(n, p, w, b, x, y, measures)
+    recallVal = recall(n, p, w, b, x, y, measures)
+    # aucVal = auc(n, p, w, b, x, y, measures)
+    # penalty(n, z, c)
+    push!(measures,[modelName,trainORtest,accuracyVal,precisionVal,recallVal])
     return measures
 end
 
@@ -59,12 +55,12 @@ end
 # function auc(n, p, w, b, x, y, measures)
 #
 # end
-
-function penalty(n, z, c)
-    pen =  zeros(n)
-    for i in 1:n
-        pen[i] = z[i]*c[i]
-    end
-    penalty = DataFrame( penalty = pen)
-    writetable("penalty.csv",penalty)
-end
+#
+# function penalty(n, z, c)
+#     pen =  zeros(n)
+#     for i in 1:n
+#         pen[i] = z[i]*c[i]
+#     end
+#     penalty = DataFrame( penalty = pen)
+#     writetable("penalty.csv",penalty)
+# end
