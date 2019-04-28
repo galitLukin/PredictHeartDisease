@@ -17,15 +17,19 @@ function _solve(c, df, modelName)
     if modelName == "Nominal"
         for i in 1:n
             @constraint(model, z[i] >= 1 - y[i]*(sum(w[j] * x[i,j] for j=1:p) - b))
-            @objective(model, Min, sum(z[i]*c[i] for i=1:n))
         end
+        @objective(model, Min, sum(z[i]*c[i] for i=1:n))
     elseif modelName == "DocError"
-        @uncertain(model, pred[i=1:n] >=0)
+        @variable(model, u)
+        @variable(model, t)
+        @variable(model, v[1:n] >= 0)
         for i in 1:n
-            @objective(model, Min, sum(z[i]*c[i] for i=1:n))
-            @constraint(model, pred[i] <= 1)
+            @constraint(model, z[i] >= 1 + y[i]*(sum(w[j] * x[i,j] for j=1:p) - b))
+            @constraint(model, v[i] >= 1 - y[i]*(sum(w[j] * x[i,j] for j=1:p) - b))
+            @constraint(model, u >= c[i]*(z[i]-v[i]))
         end
-        @constraint(model, sum(pred[i] for i=1:n) <= 1)
+        @constraint(model, t >= sum(c[i]*v[i] for i=1:n) + u)
+        @objective(model, Min, t)
     end
 
     solve(model)
@@ -69,6 +73,6 @@ measures = runModel(cTrain, train, "Nominal", measures)
 # Lies
 # measures = runModel(cTrain, train, "Lies", measures)
 # doctors error
-# measures = runModel(cTrain, train, "DocError", measures)
+measures = runModel(cTrain, train, "DocError", measures)
 
 writetable("measures.csv",measures)
