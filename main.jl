@@ -26,11 +26,13 @@ function _solve(c, df, modelName)
         @variable(model, v[1:n] >= 0)
         @variable(model, q[1:n] >= 0)
         @variable(model, cy[1:n])
+        @variable(model, vu[1:n] >= 0)
+        @variable(model, vz[1:n])
         for i in 1:n
             @constraint(model, u + v[i] >= q[i] - z[i])
             @constraint(model, z[i] >= 1 - y[i]*(sum(w[j] * x[i,j] for j=1:p) - b))
             @constraint(model, q[i] >= 1 + y[i]*(sum(w[j] * x[i,j] for j=1:p) - b))
-            @constraint(model, cy[i] == c[i] - 4 * y[i] * v[i])
+            @constraint(model, cy[i] == c[i] - 4 * y[i] )
         end
 
         @objective(model, Min, sum( cy[i] * (gamma * u + v[i] + z[i]) for i=1:n))
