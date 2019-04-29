@@ -19,20 +19,27 @@ function _solve(c, df, modelName)
             @constraint(model, z[i] >= 1 - y[i]*(sum(w[j] * x[i,j] for j=1:p) - b))
         end
         @objective(model, Min, sum(z[i]*c[i] for i=1:n))
+        solve(model)
     elseif modelName == "DocError"
-        @variable(model, u)
-        @variable(model, t)
+        gamma = 1000
+        @variable(model, u >= 0)
         @variable(model, v[1:n] >= 0)
+        @variable(model, q[1:n] >= 0)
+        @variable(model, cy[1:n])
         for i in 1:n
-            @constraint(model, z[i] >= 1 + y[i]*(sum(w[j] * x[i,j] for j=1:p) - b))
-            @constraint(model, v[i] >= 1 - y[i]*(sum(w[j] * x[i,j] for j=1:p) - b))
-            @constraint(model, u >= c[i]*(z[i]-v[i]))
+            @constraint(model, u + v[i] >= q[i] - z[i])
+            @constraint(model, z[i] >= 1 - y[i]*(sum(w[j] * x[i,j] for j=1:p) - b))
+            @constraint(model, q[i] >= 1 + y[i]*(sum(w[j] * x[i,j] for j=1:p) - b))
+            @constraint(model, cy[i] == c[i] - 4 * y[i] * v[i])
         end
-        @constraint(model, t >= sum(c[i]*v[i] for i=1:n) + u)
-        @objective(model, Min, t)
+
+        @objective(model, Min, sum( cy[i] * (gamma * u + v[i] + z[i]) for i=1:n))
+        solve(model)
+        println(getvalue(u))
+        println(getvalue(v))
     end
 
-    solve(model)
+
     b = getvalue(b)
     w = getvalue(w)
     objective = getobjectivevalue(model)
