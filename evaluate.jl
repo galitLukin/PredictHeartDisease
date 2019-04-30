@@ -9,7 +9,6 @@ function evaluate(w, b, df, trainORtest, measures, modelName)
     precisionVal = precision(n, p, w, b, x, y, measures)
     recallVal = recall(n, p, w, b, x, y, measures)
     auc(n, p, w, b, x, y, measures, trainORtest, modelName)
-    # penalty(n, z, c)
     push!(measures,[modelName,trainORtest,accuracyVal,precisionVal,recallVal])
     return measures
 end
@@ -64,12 +63,3 @@ function auc(n, p, w, b, x, y, measures, trainORtest, modelName)
     auc = DataFrame( prediction = prediction, y = y)
     writetable("auc_$trainORtest$modelName.csv",auc)
 end
-#
-# function penalty(n, z, c)
-#     pen =  zeros(n)
-#     for i in 1:n
-#         pen[i] = z[i]*c[i]
-#     end
-#     penalty = DataFrame( penalty = pen)
-#     writetable("penalty.csv",penalty)
-# end
