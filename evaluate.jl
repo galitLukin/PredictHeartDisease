@@ -1,6 +1,6 @@
 using DataFrames
 
-function evaluate(w, b, df, trainORtest, measures, modelName)
+function evaluate(w, b, df, trainORtest, measures, modelName, err, objective)
     n = size(df,1)
     y = df[:,16]
     x = df[:,1:15]
@@ -9,7 +9,7 @@ function evaluate(w, b, df, trainORtest, measures, modelName)
     precisionVal = precision(n, p, w, b, x, y, measures)
     recallVal = recall(n, p, w, b, x, y, measures)
     auc(n, p, w, b, x, y, measures, trainORtest, modelName)
-    push!(measures,[modelName,trainORtest,accuracyVal,precisionVal,recallVal])
+    push!(measures,[modelName,trainORtest,err,accuracyVal,precisionVal,recallVal, objective])
     return measures
 end
 

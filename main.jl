@@ -32,18 +32,16 @@ train, test =  splitobs(shuffleobs(df), at=0.67)
 cTrain = buildC(train)
 train = normalizeData(train)
 test = normalizeData(test)
-measures = DataFrame( model = String[], trainORtest = String[], accuracy = Float64[], precision = Float64[], recall = Float64[])
+measures = DataFrame( model = String[], trainORtest = String[], param = Float64[], accuracy = Float64[], precision = Float64[], recall = Float64[], objective = Float64[])
 # Nominal
-measures = runNominalModel(cTrain, train, measures)
-writetable("measures1.csv",measures)
-# Lab Errors
-measures = runLabModel(cTrain, train, measures, 0.05)
-measures = runLabModel(cTrain, train, measures, 0.2)
-writetable("measures2.csv",measures)
-# Lies
-# measures = runModel(cTrain, train, "Lies", measures)
+measures = runNominalModel(cTrain, train, test, measures)
+# Feature Errors
+for err in 0:0.5:5
+    measures = runLabModel(cTrain, train, test, measures, err)
+end
 # doctors error
-measures = runLabelModel(cTrain, train, measures, 0.05)
-measures = runLabelModel(cTrain, train, measures, 0.2)
+for gamma in 0:0.01:0.1
+    measures = runLabelModel(train, test, measures, gamma)
+end
 
 writetable("measures.csv",measures)
